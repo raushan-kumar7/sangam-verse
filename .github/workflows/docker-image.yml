@@ -1,6 +1,4 @@
-# File: .github/workflows/sangamverse-deploy.yml
 name: SangamVerse_Deploy
-
 on:
   push:
     branches:
@@ -10,15 +8,12 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     services:
       mysql:
         image: mysql:8.0
         env:
           MYSQL_ROOT_PASSWORD: ${{ secrets.DB_PASSWORD }}
           MYSQL_DATABASE: ${{ secrets.DB_DATABASE }}
-          MYSQL_USER: ${{ secrets.DB_USERNAME }}
-          MYSQL_PASSWORD: ${{ secrets.DB_PASSWORD }}
         ports:
           - 3306:3306
         options: >-
@@ -76,7 +71,7 @@ jobs:
           DB_HOST: 127.0.0.1
           DB_PORT: 3306
           DB_DATABASE: ${{ secrets.DB_DATABASE }}
-          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_USERNAME: root
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
         run: |
           php artisan migrate --force
