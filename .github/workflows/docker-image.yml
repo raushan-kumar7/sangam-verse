@@ -1,3 +1,4 @@
+# File: .github/workflows/sangamverse-deploy.yml
 name: SangamVerse_Deploy
 
 on:
@@ -14,8 +15,10 @@ jobs:
       mysql:
         image: mysql:8.0
         env:
-          MYSQL_ROOT_PASSWORD: ${{ secrets.DB_PASSWORD }} 
-          MYSQL_DATABASE: ${{ secrets.DB_DATABASE }}      
+          MYSQL_ROOT_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          MYSQL_DATABASE: ${{ secrets.DB_DATABASE }}
+          MYSQL_USER: ${{ secrets.DB_USERNAME }}
+          MYSQL_PASSWORD: ${{ secrets.DB_PASSWORD }}
         ports:
           - 3306:3306
         options: >-
@@ -27,6 +30,22 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, dom, filter, gd, json, zip
+          coverage: none
+
+      - name: Install Composer Dependencies
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Copy .env
+        run: php -r "file_exists('.env') || copy('.env.example', '.env');"
+
+      - name: Generate Key
+        run: php artisan key:generate
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -44,6 +63,24 @@ jobs:
           file: ./docker/8.2/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/sangam-verse:latest
+          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/sangam-verse:latest
+          cache-to: type=inline
+          build-args: |
+            WWWGROUP=1000
+            NODE_VERSION=20
+            POSTGRES_VERSION=15
+
+      - name: Run Database Migrations
+        env:
+          DB_CONNECTION: mysql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: ${{ secrets.DB_DATABASE }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        run: |
+          php artisan migrate --force
+          php artisan db:seed --force
 
       - name: Image Cleanup
         run: docker image prune -f
