@@ -63,8 +63,8 @@ RUN groupadd --force -g $WWWGROUP sail \
 
 # Copy necessary files into the container
 COPY php.ini /etc/php/8.2/cli/conf.d/99-sail.ini
-COPY start-container /usr/local/bin/start-container
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY start-container /usr/local/bin/start-container
 RUN chmod +x /usr/local/bin/start-container
 
 # Expose port 8000
