@@ -39,8 +39,8 @@ Sangam Verse is a social media platform that connects users through profiles, se
 #### Group Dashboard:
 <img width="950px;" src="https://res.cloudinary.com/cloud-alpha/image/upload/v1729939459/Sangam_Verse/group_dashboard_wb9inf.png"/>
 
-#### Local Mail Server:
-<img width="950px;" src="https://res.cloudinary.com/cloud-alpha/image/upload/v1729939458/Sangam_Verse/mail_bq7kjk.png"/>
+#### Local Mailpit Server:
+<img width="950px;" src="https://res.cloudinary.com/cloud-alpha/image/upload/v1730144053/Sangam_Verse/sangam-verse_Mailpt_zaspe3.png"/>
 
 ## Prerequisites
 - *Docker & Docker Compose*
